@@ -1,0 +1,303 @@
+﻿CREATE DATABASE shopQuanAoTT
+use shopQuanAoTT
+GO
+
+--CHUC VU
+CREATE TABLE CHUCVU(
+MaChucVu int identity(1,1) NOT NULL primary key,
+TenChucVu nvarchar(20)
+)
+GO
+--NHAN VIEN
+Create table NHANVIEN(
+MaNhanVien NVARCHAR(20) NOT NULL PRIMARY KEY,
+MaCV int NOT NULL,
+HoTen nvarchar(50),
+Email nvarchar(50),
+Sdt nvarchar(20),
+DiaChi nvarchar(MAX),
+GioiTinh int, -- 1 Nam, 0 Nu
+TrangThai int, --1 con lam viec,0 da nghi
+MatKhau NVARCHAR(MAX) NOT NULL
+)
+GO
+--kHACH Hang
+CREATE TABLE KHACHHANG(
+MaKhachHang INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+HoTenKH NVARCHAR(50),
+Sdt NVARCHAR(20),
+DiaChi NVARCHAR(MAX),
+Email NVARCHAR(50),
+GioiTinh INT, -- 1 NAM, 0 NU
+HangKH NVARCHAR(100)
+)
+GO
+----SP
+--SanPham
+CREATE TABLE SanPham(
+MaSP INT IDENTITY(1,1) NOT NULL primary key,
+Ten NVARCHAR(50)
+)
+GO
+--Loai sp
+CREATE TABLE LoaiSP(
+MaLoai INT IDENTITY(1,1) NOT NULL primary key,
+TenLoai NVARCHAR(50)
+)
+GO
+--Size
+CREATE TABLE Size(
+MaSize INT IDENTITY(1,1) NOT NULL primary key,
+TenSize NVARCHAR(20)
+)
+GO
+--Mau sac
+CREATE TABLE MauSac(
+MaMauSac INT IDENTITY(1,1) NOT NULL primary key,
+TenMauSac NVARCHAR(20)
+)
+GO
+--CHat lieu
+CREATE TABLE ChatLieu(
+MaChatLieu INT IDENTITY(1,1) NOT NULL primary key,
+TenChatLieu NVARCHAR(20)
+)
+GO
+--SAN PHAM CHI TIET
+CREATE TABLE SANPHAMCHITIET(
+MaSPCT NVARCHAR(20) NOT NULL primary key,
+MaSP INT NOT NULL,
+MaLoai INT NOT NULL,
+MaSize INT NOT NULL,
+MaMauSac INT NOT NULL,
+MaChatLieu INT NOT NULL,
+SLTon INT,
+GiaGoc FLOAT,
+GiaBan FLOAT,
+TinhTrang INT,  --0 Ngừng bán, 1 còn bán
+Anh NVARCHAR(100)
+)
+GO
+--Dot Giam Gia
+CREATE TABLE DOTGIAMGIA(
+MaDot NVARCHAR(20) NOT NULL PRIMARY KEY,
+TenDot NVARCHAR(100),
+NgayBatDau DATE DEFAULT GETDATE(),
+NgayKetThuc DATE,
+PhanTramGiam INT,
+DieuKien FLOAT, --số tiền tối thiểu để hóa đơn được giảm
+TrangThai INT  -- 1 còn hạn, 0 hết hạn
+)
+GO
+--HoaDon 
+CREATE TABLE HOADON(
+MaHoaDon NVARCHAR(20) NOT NULL PRIMARY KEY,
+MaNV NVARCHAR(20) NOT NULL,
+MaKH INT,
+MaDot NVARCHAR(20),
+NgayTao DATE DEFAULT GETDATE(),
+TongTien FLOAT,
+TienPhaiTra FLOAT,
+TrangThai INT -- 1 đã thanh toán, 0 chưa thanh toán
+)
+GO
+
+
+------------------KHÓA PHỤ BẢNG THƯỜNG
+--NHANVIEN  CHUCVU
+ALTER TABLE NHANVIEN ADD FOREIGN KEY (MaCV) REFERENCES ChucVu(MaChucVu)
+-- SPCT  SanPham
+ALTER TABLE SANPHAMCHITIET ADD FOREIGN KEY (MaSP) REFERENCES SanPham(MaSP)
+-- SPCT  LOAISP
+ALTER TABLE SANPHAMCHITIET ADD FOREIGN KEY (MaLoai) REFERENCES LoaiSP(MaLoai)
+-- SPCT  SIZE
+ALTER TABLE SANPHAMCHITIET ADD FOREIGN KEY (MaSize) REFERENCES Size(MaSize)
+-- SPCT MAUSAC
+ALTER TABLE SANPHAMCHITIET ADD FOREIGN KEY (MaMauSac) REFERENCES MauSac(MaMauSac)
+-- SPCT  CHATLIEU
+ALTER TABLE SANPHAMCHITIET ADD FOREIGN KEY (MaChatLieu) REFERENCES ChatLieu(MaChatLieu)
+-- HOADON  NHANVIEN
+ALTER TABLE HOADON ADD FOREIGN KEY (MaNV) REFERENCES NHANVIEN(MaNhanVien)
+-- HOADON  KHACHHANG
+ALTER TABLE HOADON ADD FOREIGN KEY (MaKH) REFERENCES KHACHHANG(MaKhachHang)
+-- HOADON  DOTGIAMGIA
+ALTER TABLE HOADON ADD FOREIGN KEY (MaDot) REFERENCES DOTGIAMGIA(MaDot)
+
+-----------------
+
+--HOADONCHITIET
+CREATE TABLE HOADONCHITIET(
+MaHoaDon NVARCHAR(20),
+MaSanPhamCT NVARCHAR(20),
+SL INT,
+DonGia FLOAT
+CONSTRAINT PK_HOADONCT PRIMARY KEY (MaHoaDon,MaSanPhamCT),
+CONSTRAINT FK1_HDCT FOREIGN KEY (MaHoaDon) REFERENCES HOADON(MaHoaDon),
+CONSTRAINT FK2_HDCT FOREIGN KEY (MaSanPhamCT) REFERENCES SanPhamChiTieT(MaSPCT)
+)
+GO
+
+/*
+--PhieuTra
+CREATE TABLE PHIEUTRA(
+MaPhieu INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+MaHD NVARCHAR(20) NOT NULL FOREIGN KEY REFERENCES HOADON(MaHoaDon),
+MaKH INT NOT NULL FOREIGN KEY REFERENCES KHACHHANG(MaKhachHang),
+LyDoTra NVARCHAR(MAX)
+)
+
+CREATE TABLE GIAMGIA(
+MAGIAM INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+TENDOTGIAM NVARCHAR(50), 
+PHANTRAMGIAM INT,
+NgayBatDau DATE DEFAULT GETDATE(),
+NgayKetThuc DATE,
+TrangThai INT
+)
+
+CREATE TABLE GiamGiaSP(
+MaGGSP INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+MaSPCT NVARCHAR(20) NOT NULL UNIQUE FOREIGN KEY REFERENCES SANPHAMCHITIET(MASPCT),
+MaGiam INT NOT NULL FOREIGN KEY REFERENCES GIAMGIA(MAGIAM),
+TienGiam FLOAT,
+TrangThai INT
+)
+*/
+
+---------INSERT Dữ liệu 
+--CHUCVU
+INSERT INTO CHUCVU(TenChucVu) VALUES(N'Quản lý'),(N'Nhân viên')
+
+--NhanVien
+INSERT INTO NHANVIEN VALUES
+('NV1',1,N'Hồ Anh Minh','minhhaph26809@fpt.edu.vn','0987654321','HN',1,1,'12345'),
+('NV2',1,N'Trần Trung Kiên','kien@fpt.edu.vn','0987654321','HN',1,1,'12345'),
+('NV3',1,N'Nguyễn Thành Đạt','dat@fpt.edu.vn','0987654321','HN',1,1,'12345'),
+('NV4',1,N'Hoàng Tùng Dương','duong@fpt.edu.vn','0987654321','HN',1,0,'12345'),
+('NV5',2,N'Nguyễn Hồng Anh','anh@fpt.edu.vn','0987654321','HN',1,1,'12345')
+
+--KhachHang
+INSERT INTO KHACHHANG(HoTenKH,Sdt,DiaChi,Email,GioiTinh) VALUES
+(N'Khách lẻ',null,null,null,1),
+(N'Trần Trọng','0123456789','HN','khachhang1@gmail.com',1),
+(N'Ngọc Ánh','0123456789','HN','khachhang2@gmail.com',0),
+(N'Đức Anh','0123456789','HCM','khachhang3@gmail.com',1),
+(N'Văn Tùng','0123456789','DN','khachhang4@gmail.com',1)
+
+--TenSanPham
+INSERT INTO SanPham(TEN) VALUES
+(N'Áo MU'),
+(N'Áo MC'),
+(N'Quần short'),
+(N'Áo chạy bộ'),
+(N'Bộ thể thao')
+
+--LoaiSP
+INSERT INTO LoaiSP(TENLOAI) VALUES
+(N'Áo'),
+(N'Quần'),
+(N'Bộ')
+
+--Size
+INSERT INTO Size(TenSize) VALUES
+(N'S'),
+(N'M'),
+(N'L'),
+(N'XL'),
+(N'XXL')
+
+--MauSac
+INSERT INTO MauSac(TenMauSac) VALUES
+(N'Xanh lá'),
+(N'Đỏ'),
+(N'Vàng'),
+(N'Trắng'),
+(N'Đen')
+
+--ChatLieu
+INSERT INTO ChatLieu(TenChatLieu) VALUES
+(N'Vải'),
+(N'Da'),
+(N'Cotton'),
+(N'Len'),
+(N'Lụa')
+
+--DotGiamGia
+INSERT INTO DOTGIAMGIA(MaDot,TenDot,NgayBatDau,NgayKetThuc,PhanTramGiam,DieuKien,TrangThai) VALUES
+('DOT0',N'None',GETDATE(),null,0,0,1),
+('DOT1',N'Tết 2023','2023/1/1','2023/2/1',20,500000,0),
+('DOT2',N'Sale hè','2023-05-05','2023-06-1',5,200000,0)
+--,('DOT3',N'Tết 2022','2022-02-01','2022-02-10',5,200000,0),
+--('DOT4',N'Sinh nhật','2022-11-24','2022-12-01',30,400000,0)
+
+
+--SanPham
+INSERT INTO SANPHAMCHITIET VALUES
+('SP1',1,1,2,2,3,10,60000,60000,1,'aoMu.png'),
+('SP2',3,2,1,5,1,12,90000,90000,1,'quanShort.png'),
+('SP3',2,1,3,4,1,5,120000,120000,1,'aoMC.jpg'),
+('SP5',2,3,3,1,3,4,150000,150000,0,'boMU.png')
+
+/*,('SP6',1,1,2,2,3,10,66000,66000,1,'aoMu.png'),
+('SP7',3,2,1,5,1,12,99000,99000,1,'quanShort.png'),
+('SP8',1,1,3,4,1,5,122000,122000,1,'aoMC.jpg'),
+('SP9',3,3,3,1,3,4,155000,155000,0,'boMU.png')*/
+
+--HOA DON
+INSERT INTO HOADON(MaHoaDon,MaNV,MaKH,MaDot,NgayTao,TongTien,TienPhaiTra,TrangThai)
+VALUES
+('HD1','NV1',1,'DOT0',GETDATE(),200000,200000,1),
+('HD2','NV2',1,'DOT0',GETDATE(),300000,300000,1),
+('HD3','NV1',2,'DOT0',GETDATE(),220000,220000,0)
+
+---------select 
+SELECT *FROM CHUCVU
+
+SELECT *FROM SANPHAM
+SELECT *FROM SIZE
+SELECT *FROM LoaiSP
+SELECT *FROM MauSac
+SELECT *FROM ChatLieu
+SELECT *FROM SANPHAMCHITIET
+SELECT *FROM HOADON
+SELECT *FROM DOTGIAMGIA
+SELECT *FROM NHANVIEN
+SELECT *FROM KHACHHANG
+SELECT *FROM HOADONCHITIET
+
+SELECT MASPCT,Ten,TenLoai,TenSize,TENMAUSAC,TENCHATLIEU,SLTON,GiaGoc,GiaBan,TinhTrang,Anh FROM SANPHAMCHITIET
+INNER JOIN LoaiSP ON SANPHAMCHITIET.MaLoai = LoaiSP.MaLoai
+INNER JOIN Size ON SANPHAMCHITIET.MaSize = Size.MaSize
+INNER JOIN MauSac ON SANPHAMCHITIET.MaMauSac = MauSac.MaMauSac
+INNER JOIN ChatLieu ON SANPHAMCHITIET.MaChatLieu = ChatLieu.MaChatLieu
+INNER JOIN SANPHAM ON SANPHAMCHITIET.MaSP = SANPHAM.MaSP
+WHERE 
+    CASE 
+        WHEN TenMauSac = N'Đỏ' AND Ten = N'Áo MU' THEN 1
+        ELSE 0
+    END = 1
+    OR TenMauSac = N'Đỏ';
+
+/*CASE 
+    WHEN TenMauSac = N'Đỏ' AND Ten = N'Áo MU' THEN 1
+    WHEN TenMauSac = N'Đỏ' THEN 1
+    ELSE 0
+END = 1;*/
+
+/*Drop table SANPHAM
+Drop table MauSac
+Drop table Size 
+Drop table ChatLieu
+Drop table LoaiSP
+DROP TABLE HOADON
+DROP TABLE KHACHHANG
+DROP TABLE SANPHAMCHITIET
+DROP TABLE HOADONCHITIET
+DROP TABLE GIAGIA
+
+
+INSERT INTO SANPHAMCHITIET(MaSPCT,MaSP,MaLoai,MaSize,MaMauSac,MaChatLieu,SLTon,GiaGoc,GiaBan,TinhTrang,Anh)\n" +
+                    "VALUES (?,?,?,?,?,?,?,?,?,?,?)
+
+*/
+

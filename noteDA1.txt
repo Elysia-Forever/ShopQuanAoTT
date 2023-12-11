@@ -1,0 +1,3 @@
+-Chỉnh đường dẫn thư mục khi chọn ảnh spct 
+-Chỉnh đường dẫn font chữ của in hóa đơn
+-Chỉnh đường dẫn xuất file pdf,excel của 
