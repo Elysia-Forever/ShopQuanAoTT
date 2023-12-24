@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
  *
  * @author admin
@@ -30,13 +31,7 @@ public class NewMain {
         SanPhamService spSer = new SanPhamServiceImpl();
         MauSacRepo msrp = new MauSacRepo();
         SanPhamRepo tenrp = new SanPhamRepo();
-//        List<SanPham> sp = spSer.getAll();
-//        for (SanPham t : tenrp.getAll()) {
-//            System.out.println(t.getTenSP());
- //       }
-//        MauSac ms = msrp.findByMa(5);
-//        System.out.println(ms.getTen());
-//        System.out.println(ms.getMa());
+
   float a =100000000;
         System.out.println(a);
         String formatValue = String.format("%.0f",a);

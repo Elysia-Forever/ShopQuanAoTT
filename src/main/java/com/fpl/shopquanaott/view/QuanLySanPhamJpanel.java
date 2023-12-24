@@ -23,7 +23,12 @@ import com.fpl.shopquanaott.service.impl.SanPhamServiceImpl;
 import java.awt.Image;
 import java.io.File;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
@@ -754,8 +759,23 @@ String urlAnh = "";
 
     private void btnLMMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnLMMouseClicked
       clearForm();
+      nghich();
     }//GEN-LAST:event_btnLMMouseClicked
 
+    public void nghich(){
+    List<MauSac> listMS = msRP.getAll();
+    List<String> so = listMS.stream()
+                .filter(id -> id.getMa() > 2)
+                .sorted(Comparator.comparing(MauSac :: getMa).reversed())
+                .map(MauSac :: getTen)
+                .collect(Collectors.toList());
+    
+    so.forEach(s -> System.out.println(s));
+    
+    Optional<MauSac> ms = listMS.stream().findFirst();
+        System.out.println("Màu sắc :" +ms.get().getTen());
+    }
+    
     private void tblBangSPMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblBangSPMouseClicked
        int row = tblBangSP.getSelectedRow();
        if(row == -1){
